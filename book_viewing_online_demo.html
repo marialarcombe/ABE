@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Viewing — The Ashes Barns</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --venue-primary:     #4C593C;
+    --venue-primary-rgb: 76,89,60;
+    --venue-mid:         #7F8370;
+    --venue-light:       #C6A69D;
+    --venue-primary-10:  rgba(76,89,60,0.10);
+    --venue-primary-15:  rgba(76,89,60,0.15);
+    --venue-primary-25:  rgba(76,89,60,0.25);
+    --bde-pink:   #BC93AF;
+    --bg:         #FDFCFA;
+    --surface:    #FFFFFF;
+    --border:     #E8E4DF;
+    --border-med: #D4CFC9;
+    --ink:        #2A2724;
+    --ink-muted:  #9A968F;
+    --ink-faint:  #C8C3BC;
+    --success:    #4A7C59;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito Sans',sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased; }
+
+  /* ── PROTOTYPE SWITCHER ── */
+  .switcher { background:#f0f0f0; padding:10px 16px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px; color:#555; }
+  .switcher strong { color:#222; }
+  .vbtn { padding:4px 11px; border-radius:20px; border:1px solid #ccc; background:#fff; font-size:11px; font-weight:600; cursor:pointer; color:#444; transition:all .15s; }
+  .vbtn.on { background:#333; color:#fff; border-color:#333; }
+
+  /* ── WIDGET ── */
+  .widget { max-width:900px; margin:0 auto; padding:0 16px 80px; }
+
+  /* ── VENUE BAND ── */
+  .vband { background:var(--venue-primary); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .vband-name { font-family:'Lora',serif; font-size:20px; font-weight:500; color:#fff; }
+  .bde-tag { display:flex; align-items:center; gap:7px; font-size:11px; color:rgba(255,255,255,0.55); letter-spacing:.07em; text-transform:uppercase; font-weight:500; }
+  .bde-tag::before { content:''; display:block; width:1px; height:14px; background:rgba(255,255,255,0.25); }
+  .bde-dot { width:17px; height:17px; border-radius:50%; background:var(--bde-pink); display:flex; align-items:center; justify-content:center; font-size:8px; color:#fff; font-weight:700; }
+
+  /* ── STEP BAR ── */
+  .stepbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 20px; }
+  .stepbar-inner { display:flex; }
+  .step { flex:1; display:flex; align-items:center; gap:7px; padding:13px 0; font-size:12px; font-weight:500; color:var(--ink-faint); border-bottom:2px solid transparent; transition:all .25s; }
+  .step.on  { color:var(--venue-primary); border-bottom-color:var(--venue-primary); }
+  .step.done { color:var(--ink-muted); }
+  .snum { width:22px; height:22px; border-radius:50%; border:1.5px solid var(--ink-faint); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; transition:all .25s; }
+  .step.on  .snum { background:var(--venue-primary); border-color:var(--venue-primary); color:#fff; }
+  .step.done .snum { background:var(--venue-primary-10); border-color:var(--venue-primary-25); color:var(--venue-primary); }
+  .slabel { display:none; }
+  @media(min-width:460px){ .slabel { display:inline; } }
+
+  /* ── SCREENS ── */
+  .screen { display:none; }
+  .screen.on { display:block; animation:fadeUp .3s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── HEADINGS ── */
+  .shead { padding:30px 0 22px; }
+  .eyebrow { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--venue-mid); margin-bottom:7px; }
+  .stitle { font-family:'Lora',serif; font-size:clamp(24px,5vw,34px); font-weight:400; color:var(--ink); line-height:1.2; margin-bottom:7px; }
+  .stitle em { font-style:italic; color:var(--venue-primary); }
+  .sdesc { font-size:14px; color:var(--ink-muted); font-weight:300; max-width:480px; line-height:1.7; }
+
+  /* ══ PRESCREEN ══ */
+  .pre-wrap { max-width:540px; margin:0 auto; padding:36px 0 56px; }
+  .pre-q { font-family:'Lora',serif; font-size:clamp(20px,4vw,30px); font-weight:400; color:var(--ink); line-height:1.3; margin-bottom:8px; }
+  .pre-q em { font-style:italic; color:var(--venue-primary); }
+  .pre-sub { font-size:14px; color:var(--ink-muted); font-weight:300; margin-bottom:32px; line-height:1.7; }
+  .choices { display:flex; flex-direction:column; gap:12px; }
+  .choice { padding:20px 22px; border:1.5px solid var(--border); border-radius:12px; cursor:pointer; transition:all .2s; background:var(--surface); display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; }
+  .choice:hover { border-color:var(--venue-primary); background:var(--venue-primary-10); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+  .choice-body { flex:1; }
+  .choice-title { font-family:'Lora',serif; font-size:17px; font-weight:500; color:var(--ink); margin-bottom:4px; }
+  .choice-desc { font-size:13px; color:var(--ink-muted); font-weight:300; line-height:1.55; }
+  .choice-arrow { font-size:20px; color:var(--ink-faint); transition:all .2s; flex-shrink:0; }
+  .choice:hover .choice-arrow { color:var(--venue-primary); transform:translateX(3px); }
+
+  /* ══ VIP SCREEN ══ */
+  .vip-wrap { max-width:540px; margin:0 auto; padding:36px 0 56px; }
+  .vip-icon { width:62px; height:62px; border-radius:50%; background:var(--venue-primary-10); border:1.5px solid var(--venue-primary-25); display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:22px; animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes popIn { from{transform:scale(.4);opacity:0} to{transform:scale(1);opacity:1} }
+  .vip-title { font-family:'Lora',serif; font-size:clamp(22px,4.5vw,32px); font-weight:400; color:var(--ink); line-height:1.25; margin-bottom:10px; }
+  .vip-title em { font-style:italic; color:var(--venue-primary); }
+  .vip-intro { font-size:14px; color:var(--ink-muted); font-weight:300; line-height:1.75; margin-bottom:28px; }
+  .vip-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:18px; text-align:left; }
+  .vip-card-head { background:var(--venue-primary); padding:13px 20px; font-family:'Lora',serif; font-size:15px; font-weight:500; color:#fff; }
+  .vip-card-body { padding:18px 20px; }
+  .vip-row { display:flex; align-items:center; gap:14px; padding:11px 0; border-bottom:1px solid var(--border); }
+  .vip-row:last-child { border-bottom:none; }
+  .vip-ico { width:36px; height:36px; border-radius:8px; background:var(--venue-primary-10); border:1px solid var(--venue-primary-25); display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .vip-detail { flex:1; }
+  .vip-lbl { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:2px; }
+  .vip-val { font-size:15px; font-weight:600; color:var(--ink); }
+  .vip-val a { color:var(--venue-primary); text-decoration:none; }
+  .vip-val a:hover { text-decoration:underline; }
+  .vip-tip { background:var(--venue-primary-10); border:1px solid var(--venue-primary-25); border-left:3px solid var(--venue-primary); border-radius:8px; padding:13px 15px; margin-bottom:22px; text-align:left; }
+  .vip-tip-lbl { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--venue-primary); margin-bottom:5px; }
+  .vip-tip-txt { font-size:13px; color:var(--ink-muted); line-height:1.65; font-style:italic; }
+  .vip-tip-txt strong { color:var(--ink); font-style:normal; }
+  .back-link { font-size:13px; color:var(--ink-muted); cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:color .15s; background:none; border:none; font-family:'Nunito Sans',sans-serif; padding:0; }
+  .back-link:hover { color:var(--venue-primary); }
+
+  /* ══ SCREEN 1: DATE & TIME ══ */
+  .dt-layout { display:grid; grid-template-columns:1fr; gap:20px; }
+  @media(min-width:700px){ .dt-layout { grid-template-columns:1fr 300px; gap:24px; } }
+
+  .cal-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .cal-nav { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; border-bottom:1px solid var(--border); }
+  .cal-month { font-family:'Lora',serif; font-size:18px; font-weight:500; }
+  .cal-btns { display:flex; gap:6px; }
+  .cal-btn { width:32px; height:32px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--ink-muted); cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+  .cal-btn:hover { border-color:var(--venue-primary); color:var(--venue-primary); }
+  .cal-legend { display:flex; gap:14px; flex-wrap:wrap; padding:9px 20px; border-bottom:1px solid var(--border); background:var(--bg); }
+  .leg { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-muted); }
+  .ldot { width:8px; height:8px; border-radius:2px; }
+  .lv { background:var(--venue-primary-15); border:1px solid var(--venue-primary-25); }
+  .lt { background:var(--venue-primary-15); border:1px dashed rgba(127,131,112,.5); }
+  .lw { background:rgba(167,146,119,.2); border:1px solid rgba(167,146,119,.4); }
+  .lu { background:var(--border); }
+  .cal-grid { padding:15px 20px; }
+  .cal-dow { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:5px; }
+  .cal-dow span { text-align:center; font-size:11px; font-weight:600; color:var(--ink-faint); letter-spacing:.06em; text-transform:uppercase; padding-bottom:5px; }
+  .cal-days { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; position:relative; flex-direction:column; gap:2px; color:var(--ink); }
+  .day.empty,.day.past,.day.unavail { color:var(--ink-faint); cursor:default; font-weight:400; }
+  .day.viewing { background:var(--venue-primary-10); border:1px solid var(--venue-primary-25); }
+  .day.viewing:hover { background:var(--venue-primary-15); border-color:var(--venue-primary); }
+  .day.taster { background:var(--venue-primary-10); border:1px dashed rgba(127,131,112,.5); }
+  .day.taster:hover { background:var(--venue-primary-15); }
+  .day.wedding { background:rgba(167,146,119,.12); border:1px solid rgba(167,146,119,.3); }
+  .day.wedding:hover { background:rgba(167,146,119,.22); }
+  .day.picked { background:var(--venue-primary)!important; color:#fff!important; border-color:var(--venue-primary)!important; border-style:solid!important; font-weight:600; box-shadow:0 3px 12px rgba(var(--venue-primary-rgb),.35); }
+  .pip { width:4px; height:4px; border-radius:50%; position:absolute; bottom:4px; }
+  .viewing .pip { background:var(--venue-primary); }
+  .taster  .pip { background:var(--venue-mid); }
+  .wedding .pip { background:var(--venue-light); }
+  .picked  .pip { background:rgba(255,255,255,.5); }
+
+  .time-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .tc-head { padding:15px 18px; border-bottom:1px solid var(--border); background:var(--bg); }
+  .tc-date { font-family:'Lora',serif; font-size:16px; font-weight:500; margin-bottom:2px; }
+  .tc-avail { font-size:12px; color:var(--ink-muted); }
+  .tc-body { padding:14px; }
+  .dbadge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; margin-bottom:11px; }
+  .dbv { background:var(--venue-primary-10); color:var(--venue-primary); border:1px solid var(--venue-primary-25); }
+  .dbt { background:var(--venue-primary-10); color:var(--venue-mid); border:1px dashed rgba(127,131,112,.4); }
+  .dbw { background:rgba(167,146,119,.12); color:#7A6448; border:1px solid rgba(167,146,119,.35); }
+  .dnote { font-size:13px; color:var(--ink-muted); background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin-bottom:13px; line-height:1.65; }
+  .grp-lbl { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); padding:9px 2px 4px; display:flex; align-items:center; gap:8px; }
+  .grp-lbl:first-child { padding-top:2px; }
+  .grp-lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+  .slots { display:flex; flex-direction:column; gap:6px; }
+  .tslot { padding:11px 14px; border:1px solid var(--border); border-radius:8px; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:space-between; background:var(--surface); }
+  .tslot:hover { border-color:var(--venue-primary-25); background:var(--venue-primary-10); }
+  .tslot.picked { border-color:var(--venue-primary); background:var(--venue-primary-10); box-shadow:0 0 0 1px var(--venue-primary); }
+  .tslot.taken { opacity:.35; cursor:not-allowed; text-decoration:line-through; }
+  .stime { font-family:'Lora',serif; font-size:15px; font-weight:500; }
+  .sdur { font-size:11px; color:var(--ink-muted); margin-top:1px; }
+  .stag { font-size:11px; font-weight:600; padding:3px 8px; border-radius:4px; }
+  .tag-a { color:var(--success); background:rgba(74,124,89,.1); }
+  .tag-t { color:var(--ink-faint); }
+  .tag-s { color:var(--venue-primary); background:var(--venue-primary-10); }
+  .no-date { text-align:center; padding:38px 16px; color:var(--ink-muted); font-size:14px; font-weight:300; }
+  .no-date .big { font-size:30px; opacity:.2; display:block; margin-bottom:9px; }
+  .pill { display:none; margin-top:15px; padding:13px 15px; background:var(--surface); border:1px solid var(--venue-primary-25); border-left:3px solid var(--venue-primary); border-radius:8px; }
+  .pill.show { display:block; }
+  .pill-lbl { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:4px; }
+  .pill-date { font-family:'Lora',serif; font-size:17px; font-weight:500; }
+  .pill-venue { font-size:12px; color:var(--ink-muted); margin-top:2px; }
+
+  /* ══ SCREEN 2: DETAILS ══ */
+  .det-layout { display:grid; grid-template-columns:1fr; gap:20px; }
+  @media(min-width:700px){ .det-layout { grid-template-columns:1fr 280px; gap:24px; } }
+  .fblock { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:15px; }
+  .fblock:last-child { margin-bottom:0; }
+  .fblock-head { padding:15px 20px; border-bottom:1px solid var(--border); font-family:'Lora',serif; font-size:16px; font-weight:500; background:var(--bg); }
+  .fblock-head span { font-size:13px; font-weight:300; font-family:'Nunito Sans',sans-serif; color:var(--ink-muted); }
+  .fblock-body { padding:20px; }
+  .frow { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+  .frow.full { grid-template-columns:1fr; }
+  .frow:last-child { margin-bottom:0; }
+  @media(max-width:479px){ .frow { grid-template-columns:1fr; } }
+  .fg { display:flex; flex-direction:column; gap:5px; }
+  .flbl { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); }
+  .finput { padding:11px 14px; background:var(--bg); border:1px solid var(--border-med); border-radius:8px; color:var(--ink); font-family:'Nunito Sans',sans-serif; font-size:14px; outline:none; transition:border-color .2s,box-shadow .2s; width:100%; }
+  .finput:focus { border-color:var(--venue-primary); box-shadow:0 0 0 3px var(--venue-primary-10); }
+  .finput::placeholder { color:var(--ink-faint); }
+  textarea.finput { resize:vertical; min-height:80px; }
+
+  .sum-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; position:sticky; top:20px; }
+  .sum-head { background:var(--venue-primary); padding:13px 18px; display:flex; align-items:center; gap:10px; }
+  .sum-init { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; font-weight:700; flex-shrink:0; }
+  .sum-vname { font-family:'Lora',serif; font-size:14px; font-weight:500; color:#fff; }
+  .sum-body { padding:15px 18px; }
+  .srow { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; border-bottom:1px solid var(--border); font-size:13px; gap:8px; }
+  .srow:last-child { border-bottom:none; }
+  .slb { color:var(--ink-muted); font-size:12px; flex-shrink:0; }
+  .svl { font-weight:600; color:var(--ink); text-align:right; }
+  .svl.ac { color:var(--venue-primary); }
+  .schg { font-size:11px; color:var(--ink-faint); cursor:pointer; transition:color .15s; }
+  .schg:hover { color:var(--venue-primary); }
+  .cal-note { display:flex; align-items:flex-start; gap:9px; background:rgba(82,111,131,.06); border:1px solid rgba(82,111,131,.15); border-radius:8px; padding:10px 13px; margin:13px 18px 0; font-size:12px; color:var(--ink-muted); line-height:1.6; }
+  .sum-terms { padding:11px 18px 15px; font-size:11px; color:var(--ink-faint); line-height:1.7; }
+  .sum-terms a { color:var(--venue-primary); text-decoration:none; }
+
+  /* ══ SCREEN 3: CONFIRMED ══ */
+  .conf-wrap { max-width:540px; margin:0 auto; text-align:center; padding:20px 0 40px; }
+  .conf-badge { width:68px; height:68px; border-radius:50%; background:rgba(74,124,89,.12); border:2px solid rgba(74,124,89,.25); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 22px; animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+  .conf-title { font-family:'Lora',serif; font-size:clamp(28px,6vw,40px); font-weight:400; color:var(--ink); line-height:1.15; margin-bottom:9px; }
+  .conf-title em { font-style:italic; color:var(--venue-primary); }
+  .conf-sub { color:var(--ink-muted); font-size:15px; font-weight:300; margin-bottom:30px; line-height:1.6; }
+  .conf-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:left; margin-bottom:14px; }
+  .conf-card-title { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:15px; }
+  .crow { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:14px; }
+  .crow:last-child { border-bottom:none; }
+  .clb { color:var(--ink-muted); }
+  .cvl { font-weight:600; color:var(--ink); }
+  .cvl.ac { color:var(--venue-primary); }
+  .nxt-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:left; margin-bottom:22px; }
+  .nxt-title { font-family:'Lora',serif; font-size:18px; margin-bottom:15px; }
+  .nitem { display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .nitem:last-child { border-bottom:none; }
+  .nnum { width:22px; height:22px; border-radius:50%; background:var(--venue-primary-10); border:1px solid var(--venue-primary-25); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--venue-primary); flex-shrink:0; margin-top:2px; }
+  .ntxt { font-size:13px; color:var(--ink-muted); line-height:1.6; }
+  .ntxt strong { color:var(--ink); }
+  .conf-acts { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+  /* ── ACTION BAR ── */
+  .abar { position:sticky; bottom:0; background:var(--surface); border-top:1px solid var(--border); padding:13px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; z-index:100; box-shadow:0 -4px 20px rgba(0,0,0,0.06); }
+  .abar.hide { display:none; }
+  .bbtn { padding:10px 20px; border:1px solid var(--border-med); border-radius:8px; background:transparent; color:var(--ink-muted); font-family:'Nunito Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .bbtn:hover { border-color:var(--venue-primary); color:var(--venue-primary); }
+  .nbtn { padding:12px 28px; border-radius:8px; background:var(--venue-primary); color:#fff; font-family:'Nunito Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:all .2s; flex-shrink:0; white-space:nowrap; }
+  .nbtn:hover { background:var(--venue-mid); transform:translateY(-1px); box-shadow:0 6px 20px rgba(var(--venue-primary-rgb),.28); }
+  .nbtn:disabled { opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
+  .gbtn { padding:10px 18px; border:1px solid var(--border-med); border-radius:8px; background:transparent; color:var(--ink-muted); font-family:'Nunito Sans',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+  .gbtn:hover { border-color:var(--venue-primary); color:var(--venue-primary); }
+</style>
+</head>
+<body>
+
+<!-- PROTOTYPE SWITCHER — remove in production -->
+<div class="switcher">
+  <strong>Prototype:</strong> Preview as venue →
+  <button class="vbtn on"  onclick="switchVenue('ashes',this)">The Ashes Barns</button>
+  <button class="vbtn"     onclick="switchVenue('pendrell',this)">Pendrell Hall</button>
+  <button class="vbtn"     onclick="switchVenue('mill',this)">The Mill Barns</button>
+  <button class="vbtn"     onclick="switchVenue('foxtail',this)">Foxtail Barns</button>
+  <button class="vbtn"     onclick="switchVenue('hanbury',this)">Hanbury Barns</button>
+  <button class="vbtn"     onclick="switchVenue('whistle',this)">Whistle Barns</button>
+</div>
+
+<div class="widget">
+
+  <!-- Venue band -->
+  <div class="vband">
+    <div class="vband-name" id="vband-name">The Ashes Barns</div>
+    <div class="bde-tag"><div class="bde-dot">B</div>Part of Best Day Ever Venues</div>
+  </div>
+
+  <!-- Step bar — hidden on pre/vip screens -->
+  <div class="stepbar" id="stepbar" style="display:none">
+    <div class="stepbar-inner">
+      <div class="step" id="s1"><div class="snum" id="sn1">1</div><span class="slabel">Date &amp; Time</span></div>
+      <div class="step" id="s2"><div class="snum" id="sn2">2</div><span class="slabel">Your Details</span></div>
+      <div class="step" id="s3"><div class="snum" id="sn3">3</div><span class="slabel">Confirmed</span></div>
+    </div>
+  </div>
+
+  <!-- ══ PRESCREEN ══ -->
+  <div class="screen on" id="sc-pre">
+    <div class="pre-wrap">
+      <div class="eyebrow">Book a Viewing</div>
+      <h1 class="pre-q">Have you already <em>booked your wedding</em> with us?</h1>
+      <p class="pre-sub">This helps us direct you to the right appointment type so we can give you the best possible experience.</p>
+      <div class="choices">
+        <div class="choice" onclick="showVIP()">
+          <div class="choice-body">
+            <div class="choice-title">Yes — we're already booked</div>
+            <div class="choice-desc">As one of our booked couples you have access to priority VIP appointments. We'll show you how to arrange yours.</div>
+          </div>
+          <div class="choice-arrow">→</div>
+        </div>
+        <div class="choice" onclick="showScreen(1)">
+          <div class="choice-body">
+            <div class="choice-title">No — we'd love to come and look around</div>
+            <div class="choice-desc">Book a First Viewing and one of our coordinators will show you everything at your own pace.</div>
+          </div>
+          <div class="choice-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VIP SCREEN ══ -->
+  <div class="screen" id="sc-vip">
+    <div class="vip-wrap">
+      <div class="vip-icon">⭐</div>
+      <h1 class="vip-title">You're getting married at <em id="vip-vname">The Ashes Barns!</em></h1>
+      <p class="vip-intro">You have priority access to exclusive VIP appointments — these aren't available online so that we can always offer them to you when you need them most.<br><br>Simply get in touch with your venue team and we'll find you the perfect slot, whether you'd like to wander around independently, bring your wedding party, or visit with a supplier.</p>
+
+      <div class="vip-card">
+        <div class="vip-card-head" id="vip-card-head">Contact The Ashes Barns</div>
+        <div class="vip-card-body">
+          <div class="vip-row">
+            <div class="vip-ico">📞</div>
+            <div class="vip-detail">
+              <div class="vip-lbl">Call us</div>
+              <div class="vip-val"><a id="vip-phone" href="tel:01782502164">01782 502164</a></div>
+            </div>
+          </div>
+          <div class="vip-row">
+            <div class="vip-ico">✉️</div>
+            <div class="vip-detail">
+              <div class="vip-lbl">Email us</div>
+              <div class="vip-val"><a id="vip-email" href="mailto:events@theashes-venue.co.uk">events@theashes-venue.co.uk</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="vip-tip">
+        <div class="vip-tip-lbl">What to say when you get in touch</div>
+        <div class="vip-tip-txt">"Hi — we're a booked couple and we'd love to arrange a <strong>VIP visit</strong>. Could you help us find a suitable slot?"</div>
+      </div>
+
+      <button class="back-link" onclick="showPrescreen()">← Back to booking options</button>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 1: DATE & TIME ══ -->
+  <div class="screen" id="sc-1">
+    <div class="shead">
+      <div class="eyebrow">Book a Viewing</div>
+      <h1 class="stitle">Choose a <em>date &amp; time</em></h1>
+      <p class="sdesc">Select an available day then choose your appointment. Viewing Days offer hourly slots — on Wedding Days two exclusive early morning appointments are available.</p>
+    </div>
+    <div class="dt-layout">
+      <div class="cal-card">
+        <div class="cal-nav">
+          <div class="cal-month" id="cal-month">April 2026</div>
+          <div class="cal-btns">
+            <button class="cal-btn" onclick="changeMonth(-1)">&#8249;</button>
+            <button class="cal-btn" onclick="changeMonth(1)">&#8250;</button>
+          </div>
+        </div>
+        <div class="cal-legend">
+          <div class="leg"><div class="ldot lv"></div>Viewing Day</div>
+          <div class="leg"><div class="ldot lt"></div>Viewing + Taster</div>
+          <div class="leg"><div class="ldot lw"></div>Wedding Day</div>
+          <div class="leg"><div class="ldot lu"></div>Unavailable</div>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          <div class="cal-days" id="cal-days"></div>
+        </div>
+      </div>
+      <div>
+        <div class="time-card">
+          <div class="tc-head">
+            <div class="tc-date" id="tc-date">Select a date</div>
+            <div class="tc-avail" id="tc-avail">Choose a highlighted date to see available times</div>
+          </div>
+          <div class="tc-body" id="tc-body">
+            <div class="no-date"><span class="big">&#9711;</span>Please select a date from the calendar</div>
+          </div>
+        </div>
+        <div class="pill" id="pill">
+          <div class="pill-lbl">Your appointment</div>
+          <div class="pill-date" id="pill-date">—</div>
+          <div class="pill-venue" id="pill-venue"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: DETAILS ══ -->
+  <div class="screen" id="sc-2">
+    <div class="shead">
+      <div class="eyebrow">Almost there</div>
+      <h1 class="stitle">Your <em>details</em></h1>
+      <p class="sdesc">Just a few things so we can confirm your visit and make sure everything is ready for you.</p>
+    </div>
+    <div class="det-layout">
+      <div>
+        <div class="fblock">
+          <div class="fblock-head">Who's completing this form?</div>
+          <div class="fblock-body">
+            <div class="frow">
+              <div class="fg"><label class="flbl">First Name</label><input class="finput" type="text" placeholder="Emma" autocomplete="given-name"></div>
+              <div class="fg"><label class="flbl">Last Name</label><input class="finput" type="text" placeholder="Harrison" autocomplete="family-name"></div>
+            </div>
+            <div class="frow">
+              <div class="fg"><label class="flbl">Email Address</label><input class="finput" type="email" placeholder="emma@example.com" autocomplete="email"></div>
+              <div class="fg"><label class="flbl">Phone Number</label><input class="finput" type="tel" placeholder="07700 000 000" autocomplete="tel"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fblock">
+          <div class="fblock-head">Partner's details <span>— optional</span></div>
+          <div class="fblock-body">
+            <div class="frow">
+              <div class="fg"><label class="flbl">Partner's First Name</label><input class="finput" type="text" placeholder="James"></div>
+              <div class="fg"><label class="flbl">Partner's Last Name</label><input class="finput" type="text" placeholder="Harrison"></div>
+            </div>
+            <div class="frow full">
+              <div class="fg">
+                <label class="flbl">Anything we should know before your visit?</label>
+                <textarea class="finput" placeholder="e.g. We're particularly interested in outdoor ceremony spaces…"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sum-card">
+          <div class="sum-head">
+            <div class="sum-init" id="sum-init">AB</div>
+            <div class="sum-vname" id="sum-vname">The Ashes Barns</div>
+          </div>
+          <div class="sum-body">
+            <div class="srow"><span class="slb">Date</span><span class="svl" id="s-date">—</span></div>
+            <div class="srow"><span class="slb">Time</span><span class="svl ac" id="s-time">—</span></div>
+            <div class="srow"><span class="slb">Day Type</span><span class="svl" id="s-type">—</span></div>
+            <div class="srow"><span class="slb">Duration</span><span class="svl" id="s-dur">—</span></div>
+            <div class="srow"><span class="slb">Appointment</span><span class="schg" onclick="showScreen(1)">← Change</span></div>
+          </div>
+          <div class="cal-note">📅 You'll receive a calendar invite for Google Calendar, Apple Calendar or Outlook.</div>
+          <div class="sum-terms">By confirming you agree to our <a href="#">viewing terms</a>. We'll send an SMS reminder the day before your appointment.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: CONFIRMED ══ -->
+  <div class="screen" id="sc-3">
+    <div class="conf-wrap">
+      <div class="conf-badge">✓</div>
+      <h1 class="conf-title">You're <em>booked in!</em></h1>
+      <p class="conf-sub" id="conf-sub">We're looking forward to welcoming you. A confirmation email is on its way.</p>
+      <div class="conf-card">
+        <div class="conf-card-title">Booking Summary</div>
+        <div class="crow"><span class="clb">Venue</span><span class="cvl" id="c-venue">The Ashes Barns</span></div>
+        <div class="crow"><span class="clb">Date</span><span class="cvl" id="c-date">—</span></div>
+        <div class="crow"><span class="clb">Time</span><span class="cvl ac" id="c-time">—</span></div>
+        <div class="crow"><span class="clb">Your coordinator</span><span class="cvl">Confirmed by email shortly</span></div>
+        <div class="crow"><span class="clb">Confirmation sent to</span><span class="cvl">your email address</span></div>
+      </div>
+      <div class="nxt-card">
+        <div class="nxt-title">What happens next</div>
+        <div class="nitem"><div class="nnum">1</div><div class="ntxt"><strong>Check your inbox</strong> — your confirmation email includes full details and a calendar invite.</div></div>
+        <div class="nitem"><div class="nnum">2</div><div class="ntxt"><strong>Meet your coordinator</strong> — a member of our team will be in touch before your visit.</div></div>
+        <div class="nitem"><div class="nnum">3</div><div class="ntxt"><strong>SMS reminder</strong> — we'll text you the day before so you never miss your appointment.</div></div>
+        <div class="nitem"><div class="nnum">4</div><div class="ntxt"><strong>On the day</strong> — arrive at the main entrance and your coordinator will be there to greet you.</div></div>
+      </div>
+      <div class="conf-acts">
+        <button class="nbtn" style="background:var(--success)">📅 Add to Google Calendar</button>
+        <button class="gbtn">Explore <span id="c-vname">The Ashes Barns</span></button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /widget -->
+
+<!-- Action bar -->
+<div class="abar hide" id="abar">
+  <button class="bbtn" id="bbtn" onclick="goBack()">← Back</button>
+  <div></div>
+  <button class="nbtn" id="nbtn" onclick="goNext()" disabled>Select a date &amp; time</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let activeVenue  = 'ashes';
+let curScreen    = 'pre';   // 'pre' | 'vip' | 1 | 2 | 3
+let selDate      = null;
+let selTime      = null;
+let selDayType   = null;
+let calMonth     = 3;       // April (0-indexed)
+let calYear      = 2026;
+
+// ══════════════════════════════════════════════
+// VENUE DATA
+// ══════════════════════════════════════════════
+const VENUES = {
+  ashes:   { name:'The Ashes Barns',  initials:'AB', primary:'#4C593C', rgb:'76,89,60',    mid:'#7F8370', light:'#C6A69D', phone:'01782 502164', phoneHref:'tel:01782502164', email:'events@theashes-venue.co.uk' },
+  pendrell:{ name:'Pendrell Hall',    initials:'PH', primary:'#3F415A', rgb:'63,65,90',    mid:'#9F5761', light:'#BAB99A', phone:'01902 840099', phoneHref:'tel:01902840099', email:'events@pendrellhall-venue.co.uk' },
+  mill:    { name:'The Mill Barns',   initials:'MB', primary:'#29444B', rgb:'41,68,75',    mid:'#396C6D', light:'#d0d0d0', phone:'01746 781041', phoneHref:'tel:01746781041', email:'events@themillbarns-venue.co.uk' },
+  foxtail: { name:'Foxtail Barns',    initials:'FB', primary:'#C3592B', rgb:'195,89,43',   mid:'#D8AFA7', light:'#F8EBCB', phone:'01538 717050', phoneHref:'tel:01538717050', email:'events@foxtailbarns-venue.co.uk' },
+  hanbury: { name:'Hanbury Barns',    initials:'HB', primary:'#526F83', rgb:'82,111,131',  mid:'#C96B60', light:'#E5E8EB', phone:'01283 372715', phoneHref:'tel:01283372715', email:'events@hanburybarns-venue.co.uk' },
+  whistle: { name:'Whistle Barns',    initials:'WB', primary:'#596556', rgb:'89,101,86',   mid:'#A79277', light:'#F2CB97', phone:'01773 300811', phoneHref:'tel:01773300811', email:'events@whistlebarns-venue.co.uk' }
+};
+
+// ══════════════════════════════════════════════
+// CALENDAR DATA  (in production: from Google Calendar API)
+// ══════════════════════════════════════════════
+const DAY_TYPES = {
+  '2026-3': { 4:'viewing',5:'viewing',6:'wedding',8:'viewing',9:'viewing',10:'viewing',11:'viewing',12:'taster',13:'wedding',15:'viewing',16:'viewing',17:'viewing',19:'viewing',20:'wedding',22:'viewing',23:'viewing',24:'taster',25:'viewing',26:'viewing',27:'wedding',29:'viewing',30:'viewing' }
+};
+const BOOKED = { '2026-3-9':['09:00','11:15','14:45'], '2026-3-15':['10:00','12:15','13:45','16:00'], '2026-3-22':['09:00','10:00'], '2026-3-12':['09:00','10:00'] };
+const SLOTS = {
+  viewing: [{t:'09:00',g:'Morning'},{t:'10:00',g:'Morning'},{t:'11:15',g:'Late Morning'},{t:'12:15',g:'Late Morning'},{t:'13:45',g:'Afternoon'},{t:'14:45',g:'Afternoon'},{t:'16:00',g:'Late Afternoon'}],
+  taster:  [{t:'09:00',g:'Morning'},{t:'10:00',g:'Morning'},{t:'11:15',g:'Late Morning'},{t:'12:15',g:'Late Morning'},{t:'13:45',g:'Afternoon'}],
+  wedding: [{t:'08:45',g:'Early Morning'},{t:'09:45',g:'Early Morning'}]
+};
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ══════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════
+function applyTheme(key) {
+  const v = VENUES[key];
+  const r = document.documentElement;
+  r.style.setProperty('--venue-primary',    v.primary);
+  r.style.setProperty('--venue-primary-rgb',v.rgb);
+  r.style.setProperty('--venue-mid',        v.mid);
+  r.style.setProperty('--venue-light',      v.light);
+  r.style.setProperty('--venue-primary-10', `rgba(${v.rgb},.10)`);
+  r.style.setProperty('--venue-primary-15', `rgba(${v.rgb},.15)`);
+  r.style.setProperty('--venue-primary-25', `rgba(${v.rgb},.25)`);
+  // Name labels
+  document.getElementById('vband-name').textContent  = v.name;
+  document.getElementById('sum-init').textContent    = v.initials;
+  document.getElementById('sum-vname').textContent   = v.name;
+  document.getElementById('c-venue').textContent     = v.name;
+  document.getElementById('c-vname').textContent     = v.name;
+  document.getElementById('conf-sub').textContent    = `We're looking forward to welcoming you to ${v.name}. A confirmation email is on its way.`;
+  document.getElementById('pill-venue').textContent  = v.name;
+  // VIP screen
+  document.getElementById('vip-vname').textContent      = v.name + '!';
+  document.getElementById('vip-card-head').textContent  = `Contact ${v.name}`;
+  const ph = document.getElementById('vip-phone');
+  ph.textContent = v.phone; ph.href = v.phoneHref;
+  const em = document.getElementById('vip-email');
+  em.textContent = v.email; em.href = `mailto:${v.email}`;
+}
+
+function switchVenue(key, btn) {
+  activeVenue = key;
+  applyTheme(key);
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  selDate = null; selTime = null; selDayType = null;
+  buildCalendar();
+  resetTimePanel();
+  showPrescreen();
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function showPrescreen() {
+  curScreen = 'pre';
+  setScreen('sc-pre');
+  document.getElementById('stepbar').style.display = 'none';
+  document.getElementById('abar').classList.add('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showVIP() {
+  curScreen = 'vip';
+  setScreen('sc-vip');
+  document.getElementById('stepbar').style.display = 'none';
+  document.getElementById('abar').classList.add('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showScreen(n) {
+  curScreen = n;
+  setScreen('sc-' + n);
+  document.getElementById('stepbar').style.display = '';
+  updateSteps();
+  updateActionBar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+function goNext() { if (typeof curScreen==='number' && curScreen < 3) showScreen(curScreen + 1); }
+function goBack() {
+  if (curScreen === 1)                             showPrescreen();
+  else if (typeof curScreen==='number' && curScreen > 1) showScreen(curScreen - 1);
+}
+
+function updateSteps() {
+  for (let i=1; i<=3; i++) {
+    const s = document.getElementById('s'+i);
+    const n = document.getElementById('sn'+i);
+    s.classList.remove('on','done');
+    if (i < curScreen)      { s.classList.add('done'); n.textContent = '✓'; }
+    else if (i === curScreen){ s.classList.add('on');   n.textContent = i; }
+    else                     { n.textContent = i; }
+  }
+}
+
+function updateActionBar() {
+  const bar  = document.getElementById('abar');
+  const back = document.getElementById('bbtn');
+  const next = document.getElementById('nbtn');
+  if (typeof curScreen !== 'number' || curScreen === 3) { bar.classList.add('hide'); return; }
+  bar.classList.remove('hide');
+  back.style.display = 'block';
+  if (curScreen === 1) {
+    const ready = selDate && selTime;
+    next.disabled = !ready;
+    next.textContent = ready ? 'Continue →' : 'Select a date & time';
+  } else if (curScreen === 2) {
+    next.disabled = false;
+    next.textContent = 'Confirm Booking →';
+  }
+}
+
+// ══════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════
+function buildCalendar() {
+  const el    = document.getElementById('cal-days');
+  el.innerHTML = '';
+  document.getElementById('cal-month').textContent = `${MONTHS[calMonth]} ${calYear}`;
+  const types = DAY_TYPES[`${calYear}-${calMonth}`] || {};
+  const today = new Date(); today.setHours(0,0,0,0);
+  const offset = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
+  const days   = new Date(calYear, calMonth+1, 0).getDate();
+
+  for (let i=0; i<offset; i++) {
+    const b = document.createElement('div'); b.className='day empty'; el.appendChild(b);
+  }
+  for (let d=1; d<=days; d++) {
+    const b   = document.createElement('div');
+    const dt  = new Date(calYear, calMonth, d);
+    const typ = types[d];
+    if (dt < today)  { b.className='day past';   b.textContent=d; }
+    else if (!typ)   { b.className='day unavail'; b.textContent=d; }
+    else {
+      b.className = `day ${typ}`;
+      b.innerHTML = `${d}<span class="pip"></span>`;
+      b.onclick   = () => pickDate(d, typ, b);
+    }
+    el.appendChild(b);
+  }
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth=0; calYear++; }
+  if (calMonth < 0)  { calMonth=11; calYear--; }
+  selDate=null; selTime=null; selDayType=null;
+  buildCalendar();
+  resetTimePanel();
+  updateActionBar();
+}
+
+function resetTimePanel() {
+  document.getElementById('tc-date').textContent  = 'Select a date';
+  document.getElementById('tc-avail').textContent = 'Choose a highlighted date to see available times';
+  document.getElementById('tc-body').innerHTML    = '<div class="no-date"><span class="big">&#9711;</span>Please select a date from the calendar</div>';
+  document.getElementById('pill').classList.remove('show');
+}
+
+function pickDate(day, type, el) {
+  document.querySelectorAll('.day').forEach(d => d.classList.remove('picked'));
+  el.classList.add('picked');
+  selDate = day; selTime = null; selDayType = type;
+  renderSlots(day, type);
+  updateActionBar();
+}
+
+function fmt(t) {
+  const [h,m] = t.split(':').map(Number);
+  return `${h>12?h-12:h}:${String(m).padStart(2,'0')} ${h<12?'am':'pm'}`;
+}
+
+function renderSlots(day, type) {
+  const dateLabel = `${DAYS[new Date(calYear,calMonth,day).getDay()]} ${day} ${MONTHS[calMonth]} ${calYear}`;
+  const bk  = BOOKED[`${calYear}-${calMonth}-${day}`] || [];
+  const sl  = SLOTS[type];
+  const av  = sl.filter(s => !bk.includes(s.t)).length;
+  const dur = type==='wedding' ? '45 min private tour' : 'Approx. 60 mins';
+
+  document.getElementById('tc-date').textContent  = dateLabel;
+  document.getElementById('tc-avail').textContent = `${av} of ${sl.length} appointments available`;
+
+  const badgeCls = type==='wedding' ? 'dbw' : type==='taster' ? 'dbt' : 'dbv';
+  const badgeTxt = type==='wedding' ? '● Wedding Day' : '● Viewing Day';
+  const note     = type==='wedding'
+    ? 'A wedding is being celebrated here today. Two exclusive early morning appointments are available — you\'ll have our complete, undivided attention.'
+    : type==='taster'
+    ? 'Morning and early afternoon appointments are available. Viewings conclude by mid-afternoon as a private tasting event takes place this evening.'
+    : 'Seven appointments are available throughout the day. Your viewing lasts approximately 60 minutes with a dedicated coordinator.';
+
+  let html = `<div class="dbadge ${badgeCls}">${badgeTxt}</div><div class="dnote">${note}</div><div class="slots">`;
+  let lastG = null;
+  sl.forEach(s => {
+    const taken = bk.includes(s.t);
+    const disp  = fmt(s.t);
+    if (s.g !== lastG) { html += `<div class="grp-lbl">${s.g}</div>`; lastG = s.g; }
+    if (taken) {
+      html += `<div class="tslot taken"><div><div class="stime">${disp}</div><div class="sdur">${dur}</div></div><span class="stag tag-t">Taken</span></div>`;
+    } else {
+      html += `<div class="tslot" onclick="pickSlot('${s.t}','${disp}','${dateLabel}','${type}','${dur}',this)"><div><div class="stime">${disp}</div><div class="sdur">${dur}</div></div><span class="stag tag-a">Available</span></div>`;
+    }
+  });
+  html += '</div>';
+  document.getElementById('tc-body').innerHTML = html;
+}
+
+function pickSlot(raw, disp, dateLabel, type, dur, el) {
+  document.querySelectorAll('.tslot:not(.taken)').forEach(s => {
+    s.classList.remove('picked');
+    const tg = s.querySelector('.stag'); if(tg){tg.textContent='Available';tg.className='stag tag-a';}
+  });
+  el.classList.add('picked');
+  const tg = el.querySelector('.stag'); tg.textContent='✓ Selected'; tg.className='stag tag-s';
+
+  selTime = disp; selDayType = type;
+
+  // Pill
+  document.getElementById('pill').classList.add('show');
+  document.getElementById('pill-date').textContent  = `${dateLabel} at ${disp}`;
+  document.getElementById('pill-venue').textContent = VENUES[activeVenue].name;
+
+  // Summary card
+  const typeLabel = type==='wedding' ? 'Wedding Day' : type==='taster' ? 'Viewing Day + Taster' : 'Viewing Day';
+  document.getElementById('s-date').textContent = dateLabel;
+  document.getElementById('s-time').textContent = disp;
+  document.getElementById('s-type').textContent = typeLabel;
+  document.getElementById('s-dur').textContent  = dur;
+  document.getElementById('c-date').textContent = dateLabel;
+  document.getElementById('c-time').textContent = disp;
+
+  updateActionBar();
+}
+
+// ── INIT ──
+applyTheme('ashes');
+buildCalendar();
+showPrescreen();
+</script>
+</body>
+</html>
