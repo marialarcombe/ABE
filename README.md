@@ -6,6 +6,8 @@
 
 [Link to 2027 Tastings](https://marialarcombe.github.io/ABE/2027_Tasting_dates.html)
 
+<a href="https://marialarcombe.github.io/ABE/2027_Tasting_dates.html" target="_blank" rel="noopener noreferrer">2027 Tasting Dates</a>
+
 ## Installation
 
 Instructions for installation can be found in the INSTALL.md file.
