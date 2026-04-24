@@ -1,14 +1,10 @@
 # ABE Project
 
-## Overview
-
-This repository contains the ABE project, which includes various resources for book viewing.
-
-## Demo
+## Links
 
 [View Book Demo](https://marialarcombe.github.io/ABE/book_viewing_online_demo.html){:target="_blank"}
 
-<a href=https://marialarcombe.github.io/ABE/2027_Tasting_dates.html"target=_blank">Tasting Dates 2027</a>
+[Link to 2027 Tastings](https://marialarcombe.github.io/ABE/2027_Tasting_dates.html)
 
 ## Installation
 
